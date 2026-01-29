@@ -3,6 +3,6 @@ builder = "dockerfile"
 
 [deploy]
 startCommand = "python main.py"
-healthcheckPath = "/"
-healthcheckTimeout = 300
+# Sin healthcheck - los bots de Telegram no exponen puertos HTTP
+healthcheckPath = ""
 restartPolicyType = "always"
