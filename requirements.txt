@@ -1,0 +1,5 @@
+python-telegram-bot
+playwright
+python-dotenv
+greenlet
+pytest
