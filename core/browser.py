@@ -54,26 +54,19 @@ class BrowserManager:
             logger.info("Navegador iniciado.")
 
         # Contexto nuevo por cada página (cookies aisladas si quisiéramos)
+        # --- Simulación de iPhone para saltar bloqueos ---
         context = await cls._browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            viewport={"width": 1280, "height": 800},
+            user_agent="Mozilla/5.0 (iPhone; CPU iPhone OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1",
+            viewport={"width": 375, "height": 812},
+            is_mobile=True,
+            has_touch=True,
             ignore_https_errors=True
         )
         page = await context.new_page()
         
-        # --- Inyección de Sigilo Manual (Deep Stealth) ---
-        # Borramos el rastro de 'webdriver' y simulamos ser un humano
+        # Inyectamos sigilo adicional
         await page.add_init_script("""
-            Object.defineProperty(navigator, 'webdriver', {
-                get: () => undefined
-            });
-            window.chrome = { runtime: {} };
-            Object.defineProperty(navigator, 'languages', {
-                get: () => ['es-PE', 'es', 'en-US', 'en']
-            });
-            Object.defineProperty(navigator, 'plugins', {
-                get: () => [1, 2, 3, 4, 5]
-            });
+            Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
         """)
         
         return page

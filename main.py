@@ -66,9 +66,8 @@ async def cmd_buscar_producto(update: Update, context: ContextTypes.DEFAULT_TYPE
     await update.message.reply_text(f"🛒 Buscando *{query}* en {len(store_names)} tiendas...")
     
     # --- Patrón Aggregator + Factory con Límite de Concurrencia ---
-    # Railway tiene poca RAM (512MB). Si abrimos 8 navegadores a la vez, explota.
-    # Usamos un Semáforo para que solo corran 2 al mismo tiempo.
-    sem = asyncio.Semaphore(2) 
+    # Railway tiene poca RAM (512MB). Usamos 1 a la vez para máxima estabilidad.
+    sem = asyncio.Semaphore(1) 
     scrapers = get_all_scrapers()
 
     async def wrapped_search(scraper):
