@@ -54,7 +54,7 @@ class BrowserManager:
             logger.info("Navegador iniciado.")
 
         # Contexto nuevo por cada página (cookies aisladas si quisiéramos)
-        # --- Simulación de iPhone para saltar bloqueos ---
+        # --- Simulación de iPhone con Headers Reales ---
         context = await cls._browser.new_context(
             user_agent="Mozilla/5.0 (iPhone; CPU iPhone OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1",
             viewport={"width": 375, "height": 812},
@@ -62,7 +62,16 @@ class BrowserManager:
             has_touch=True,
             locale="es-PE",
             timezone_id="America/Lima",
-            ignore_https_errors=True
+            ignore_https_errors=True,
+            extra_http_headers={
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+                "Accept-Language": "es-PE,es;q=0.9",
+                "Sec-Fetch-Dest": "document",
+                "Sec-Fetch-Mode": "navigate",
+                "Sec-Fetch-Site": "none",
+                "Sec-Fetch-User": "?1",
+                "Upgrade-Insecure-Requests": "1"
+            }
         )
         page = await context.new_page()
         
