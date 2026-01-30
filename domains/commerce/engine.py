@@ -76,8 +76,8 @@ class GenericProductScraper:
             logger.info(f"[{self.store_name}] Encontrados {len(items)} items con selector: {self.selectors['item']}")
             
             if len(items) == 0:
-                # Debug: guardar screenshot para ver qué pasó
-                logger.warning(f"[{self.store_name}] No se encontraron items. Puede ser captcha o selector incorrecto.")
+                title_page = await page.title()
+                logger.warning(f"[{self.store_name}] 0 items. Título de página: '{title_page}'. URL: {page.url}")
             
             for i, item in enumerate(items[:max_results]):
                 try:
