@@ -65,12 +65,22 @@ async def cmd_buscar_producto(update: Update, context: ContextTypes.DEFAULT_TYPE
     store_names = get_all_store_names()
     await update.message.reply_text(f"🛒 Buscando *{query}* en {len(store_names)} tiendas...")
     
-    # --- Patrón Aggregator + Factory ---
-    # Obtenemos todos los scrapers del Registry y lanzamos en paralelo
+    # --- Patrón Aggregator + Factory con Límite de Concurrencia ---
+    # Railway tiene poca RAM (512MB). Si abrimos 8 navegadores a la vez, explota.
+    # Usamos un Semáforo para que solo corran 2 al mismo tiempo.
+    sem = asyncio.Semaphore(2) 
     scrapers = get_all_scrapers()
-    
-    tasks = [s.search(query) for s in scrapers]
-    results_lists = await asyncio.gather(*tasks, return_exceptions=True)
+
+    async def wrapped_search(scraper):
+        async with sem:
+            try:
+                return await scraper.search(query)
+            except Exception as e:
+                logger.error(f"Error en {scraper.store_name}: {e}")
+                return []
+
+    tasks = [wrapped_search(s) for s in scrapers]
+    results_lists = await asyncio.gather(*tasks)
     
     all_results = []
     for res in results_lists:

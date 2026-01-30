@@ -49,7 +49,8 @@ class BrowserManager:
         # Por simplicidad v1: Contexto nuevo con User-Agent seteado.
         context = await cls._browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-            viewport={"width": 1280, "height": 800}
+            viewport={"width": 1280, "height": 800},
+            ignore_https_errors=True
         )
         return await context.new_page()
 
