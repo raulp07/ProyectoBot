@@ -60,6 +60,8 @@ class BrowserManager:
             viewport={"width": 375, "height": 812},
             is_mobile=True,
             has_touch=True,
+            locale="es-PE",
+            timezone_id="America/Lima",
             ignore_https_errors=True
         )
         page = await context.new_page()

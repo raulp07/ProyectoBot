@@ -68,6 +68,15 @@ class GenericProductScraper:
         results: List[SearchResult] = []
         
         try:
+            # --- Aterrizaje Suave ---
+            # Vamos primero a la home para "calentar" cookies y que no nos redirijan
+            base_url = "/".join(self.config["base_url"].split("/")[:3])
+            try:
+                await page.goto(base_url, wait_until="commit", timeout=15000)
+                await asyncio.sleep(1)
+            except:
+                pass # Si falla la home, intentamos la búsqueda igual
+                
             await page.goto(url, wait_until="domcontentloaded", timeout=45000)
             
             # --- Comportamiento Humano: Scroll ---
