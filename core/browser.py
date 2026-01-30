@@ -61,9 +61,20 @@ class BrowserManager:
         )
         page = await context.new_page()
         
-        # --- Ultra Sigilo (playwright-stealth) ---
-        from playwright_stealth import stealth
-        await stealth(page)
+        # --- Inyección de Sigilo Manual (Deep Stealth) ---
+        # Borramos el rastro de 'webdriver' y simulamos ser un humano
+        await page.add_init_script("""
+            Object.defineProperty(navigator, 'webdriver', {
+                get: () => undefined
+            });
+            window.chrome = { runtime: {} };
+            Object.defineProperty(navigator, 'languages', {
+                get: () => ['es-PE', 'es', 'en-US', 'en']
+            });
+            Object.defineProperty(navigator, 'plugins', {
+                get: () => [1, 2, 3, 4, 5]
+            });
+        """)
         
         return page
 

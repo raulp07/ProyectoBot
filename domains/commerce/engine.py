@@ -77,6 +77,12 @@ class GenericProductScraper:
             await page.evaluate("window.scrollTo(500, 1000)")
             await asyncio.sleep(2)
             
+            # Esperar a que al menos un item aparezca (máximo 10 seg)
+            try:
+                await page.wait_for_selector(self.selectors["item"], timeout=10000)
+            except:
+                pass # Si no aparece, intentamos seguir igual
+            
             # Buscar items usando el selector configurado
             items = await page.query_selector_all(self.selectors["item"])
             logger.info(f"[{self.store_name}] Encontrados {len(items)} items con selector: {self.selectors['item']}")
