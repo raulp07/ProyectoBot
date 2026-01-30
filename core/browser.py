@@ -62,8 +62,8 @@ class BrowserManager:
         page = await context.new_page()
         
         # --- Ultra Sigilo (playwright-stealth) ---
-        from playwright_stealth import stealth_async
-        await stealth_async(page)
+        from playwright_stealth import stealth
+        await stealth(page)
         
         return page
 
