@@ -68,8 +68,14 @@ class GenericProductScraper:
         results: List[SearchResult] = []
         
         try:
-            await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-            await asyncio.sleep(2)  # Espera humana
+            await page.goto(url, wait_until="domcontentloaded", timeout=45000)
+            
+            # --- Comportamiento Humano: Scroll ---
+            # Algunas tiendas no muestran productos si no hay scroll
+            await page.evaluate("window.scrollTo(0, 500)")
+            await asyncio.sleep(2)
+            await page.evaluate("window.scrollTo(500, 1000)")
+            await asyncio.sleep(2)
             
             # Buscar items usando el selector configurado
             items = await page.query_selector_all(self.selectors["item"])

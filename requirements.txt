@@ -3,3 +3,4 @@ playwright
 python-dotenv
 greenlet
 pytest
+playwright-stealth

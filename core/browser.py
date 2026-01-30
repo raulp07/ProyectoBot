@@ -54,14 +54,18 @@ class BrowserManager:
             logger.info("Navegador iniciado.")
 
         # Contexto nuevo por cada página (cookies aisladas si quisiéramos)
-        # O un contexto compartido si queremos persistir sesión.
-        # Por simplicidad v1: Contexto nuevo con User-Agent seteado.
         context = await cls._browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             viewport={"width": 1280, "height": 800},
             ignore_https_errors=True
         )
-        return await context.new_page()
+        page = await context.new_page()
+        
+        # --- Ultra Sigilo (playwright-stealth) ---
+        from playwright_stealth import stealth_async
+        await stealth_async(page)
+        
+        return page
 
     @classmethod
     async def close(cls):
