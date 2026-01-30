@@ -35,8 +35,17 @@ class BrowserManager:
             logger.info("Iniciando motor Chromium...")
             cls._playwright = await async_playwright().start()
             
-            # Anti-detect args
-            args = ["--disable-blink-features=AutomationControlled"]
+            # Anti-detect args más fuertes para la nube
+            args = [
+                "--disable-blink-features=AutomationControlled",
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-infobars",
+                "--window-position=0,0",
+                "--ignore-certifcate-errors",
+                "--ignore-certifcate-errors-spki-list",
+                "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            ]
             
             cls._browser = await cls._playwright.chromium.launch(
                 headless=BROWSER_HEADLESS,

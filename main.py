@@ -74,6 +74,9 @@ async def cmd_buscar_producto(update: Update, context: ContextTypes.DEFAULT_TYPE
     async def wrapped_search(scraper):
         async with sem:
             try:
+                # Pequeño delay aleatorio para no parecer un bot (1 a 3 seg)
+                import random
+                await asyncio.sleep(random.uniform(1, 3))
                 return await scraper.search(query)
             except Exception as e:
                 logger.error(f"Error en {scraper.store_name}: {e}")
