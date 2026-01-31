@@ -57,7 +57,7 @@ class GenericProductScraper:
         except ValueError:
             return 0.0
     
-    async def search(self, query: str, max_results: int = 5) -> List[SearchResult]:
+    async def search(self, query: str, max_results: int = 3) -> List[SearchResult]:
         """
         Ejecuta la búsqueda usando la configuración de la tienda.
         """
@@ -79,12 +79,12 @@ class GenericProductScraper:
                 
             await page.goto(url, wait_until="domcontentloaded", timeout=45000)
             
-            # --- Comportamiento Humano: Scroll ---
+            # --- Comportamiento Humano: Scroll (optimizado) ---
             # Algunas tiendas no muestran productos si no hay scroll
             await page.evaluate("window.scrollTo(0, 500)")
-            await asyncio.sleep(2)
+            await asyncio.sleep(0.5)
             await page.evaluate("window.scrollTo(500, 1000)")
-            await asyncio.sleep(2)
+            await asyncio.sleep(0.5)
             
             # Esperar a que al menos un item aparezca (máximo 10 seg)
             try:
@@ -116,9 +116,21 @@ class GenericProductScraper:
                         base = self.config["base_url"].split("/")[0:3]
                         href = "/".join(base) + href
                     
-                    # Precio
-                    price_el = await item.query_selector(self.selectors["price"])
-                    price_text = (await price_el.inner_text()).strip() if price_el else "0"
+                    # Precio: Priorizar precio con descuento sobre precio normal
+                    price_el = None
+                    price_text = "0"
+                    
+                    # Primero buscar precio con descuento si el selector existe
+                    if "discount_price" in self.selectors and self.selectors["discount_price"]:
+                        price_el = await item.query_selector(self.selectors["discount_price"])
+                    
+                    # Si no hay precio con descuento, usar precio normal
+                    if not price_el:
+                        price_el = await item.query_selector(self.selectors["price"])
+                    
+                    if price_el:
+                        price_text = (await price_el.inner_text()).strip()
+                    
                     price = self._clean_price(price_text)
                     
                     # Imagen

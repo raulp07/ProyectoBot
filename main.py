@@ -63,45 +63,64 @@ async def cmd_buscar_producto(update: Update, context: ContextTypes.DEFAULT_TYPE
     query = " ".join(context.args) if context.args else "iphone 15"
     
     store_names = get_all_store_names()
-    await update.message.reply_text(f"🛒 Buscando *{query}* en {len(store_names)} tiendas...")
+    await update.message.reply_text(f"🛒 Buscando *{query}* en {len(store_names)} tiendas...", parse_mode="Markdown")
     
     # --- Patrón Aggregator + Factory con Límite de Concurrencia ---
-    # Railway tiene poca RAM (512MB). Usamos 1 a la vez para máxima estabilidad.
-    sem = asyncio.Semaphore(1) 
+    sem = asyncio.Semaphore(4) 
     scrapers = get_all_scrapers()
+    
+    all_results = []
+    status_lines = []
 
     async def wrapped_search(scraper):
         async with sem:
             try:
-                # Pequeño delay aleatorio para no parecer un bot (1 a 3 seg)
                 import random
-                await asyncio.sleep(random.uniform(1, 3))
-                return await scraper.search(query)
+                await asyncio.sleep(random.uniform(0.3, 0.8))
+                results = await scraper.search(query)
+                count = len(results) if results else 0
+                return (scraper.store_name, results, count, None)
             except Exception as e:
-                logger.error(f"Error en {scraper.store_name}: {e}")
-                return []
+                return (scraper.store_name, [], 0, str(e))
 
     tasks = [wrapped_search(s) for s in scrapers]
     results_lists = await asyncio.gather(*tasks)
     
-    all_results = []
-    for res in results_lists:
-        if isinstance(res, list):
-            all_results.extend(res)
+    # Procesar resultados y generar reporte
+    for store_name, results, count, error in results_lists:
+        if error:
+            status_lines.append(f"❌ {store_name}: Error ({error[:30]}...)")
+            logger.error(f"❌ {store_name}: {error}")
+        elif count > 0:
+            status_lines.append(f"✅ {store_name}: {count} productos")
+            all_results.extend(results)
+            logger.info(f"✅ {store_name}: {count} productos")
+        else:
+            status_lines.append(f"⚠️ {store_name}: 0 productos")
+            logger.warning(f"⚠️ {store_name}: 0 productos")
+    
+    # Enviar reporte de estado de tiendas
+    await update.message.reply_text("📊 **Reporte por tienda:**\n" + "\n".join(status_lines), parse_mode="Markdown")
     
     if not all_results:
-        await update.message.reply_text("❌ No se encontraron productos.")
+        await update.message.reply_text("😕 No se encontraron productos. Intenta con otra búsqueda.")
         return
 
-    # Ordenar por precio (el más barato primero)
+    # Filtrar productos con precio 0 y ordenar
+    all_results = [p for p in all_results if p.price > 0]
     all_results.sort(key=lambda x: x.price)
 
-    lines = [f"✅ Encontrados {len(all_results)} productos:\n"]
-    for prod in all_results[:15]: # Top 15 mejores precios
-        lines.append(f"• **S/ {prod.price:,.2f}** [{prod.source}] [{prod.title}]({prod.url})")
+    if not all_results:
+        await update.message.reply_text("😕 Se encontraron productos pero sin precio válido.")
+        return
+
+    # Mostrar Top 15
+    lines = [f"🏆 **Top {min(15, len(all_results))} mejores precios:**\n"]
+    for prod in all_results[:15]:
+        title_short = prod.title[:35] + "..." if len(prod.title) > 35 else prod.title
+        lines.append(f"• S/ {prod.price:,.2f} [{prod.source}]\n  [{title_short}]({prod.url})")
         
-    await update.message.reply_text("\n".join(lines), parse_mode="Markdown")
-    await update.message.reply_text("✅ Búsqueda finalizada.")
+    await update.message.reply_text("\n".join(lines), parse_mode="Markdown", disable_web_page_preview=True)
 
 # Handler para búsqueda directa (sin /p)
 async def handle_text_search(update: Update, context: ContextTypes.DEFAULT_TYPE):

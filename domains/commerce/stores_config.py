@@ -18,6 +18,7 @@ STORES = {
             "title": "h2.ui-search-item__title, .poly-component__title",
             "link": "a.ui-search-link, a.poly-component__title",
             "price": "span.andes-money-amount__fraction, .poly-price__current .andes-money-amount__fraction",
+            "discount_price": ".ui-search-price__second-line .andes-money-amount__fraction, .poly-price__current .andes-money-amount__fraction",
             "image": "img.ui-search-result-image__element, img.poly-component__picture"
         }
     },
@@ -29,6 +30,7 @@ STORES = {
             "title": "b[id^='testId-pod-display-subTitle'], b.pod-subTitle, b[id^='testId-pod-display-title']",
             "link": "a.pod-link, a[href*='/product/']",
             "price": "li[data-pod-price-main] span, span[id^='testId-pod-display-sales-price']",
+            "discount_price": "span[id^='testId-pod-display-sales-price'], li[data-internet-price] span",
             "image": "img[src*='falabella.scene7.com']"
         }
     },
@@ -40,6 +42,7 @@ STORES = {
             "title": "span.vtex-product-summary-2-x-productBrand",
             "link": "a.vtex-product-summary-2-x-clearLink",
             "price": "span.promart-promart-components-0-x-currencyInteger, .vtex-product-price-1-x-sellingPriceValue",
+            "discount_price": ".vtex-product-price-1-x-sellingPrice .vtex-product-price-1-x-currencyInteger",
             "image": "img.vtex-product-summary-2-x-imageNormal"
         }
     },
@@ -51,6 +54,7 @@ STORES = {
             "title": "a.product-name, h3.product-name",
             "link": "a.product-name, a[href*='/p/']",
             "price": "span.price-value, span.sales-price",
+            "discount_price": "span.sales-price, .special-price .price-value",
             "image": "img.tile-image"
         }
     },
@@ -62,6 +66,7 @@ STORES = {
             "title": "a.catalog-product-name, div.catalog-product-details__name",
             "link": "a.catalog-product-item, a[href*='/product/']",
             "price": "li.catalog-prices__offer-price, span.catalog-product-details__price",
+            "discount_price": "li.catalog-prices__offer-price span, .catalog-prices__best-price",
             "image": "img.catalog-product-image"
         }
     },
@@ -73,6 +78,7 @@ STORES = {
             "title": "a.catalogue-product__name, div.product-name",
             "link": "a.catalogue-product__name, a[href*='/p/']",
             "price": "span.price-main-md, span.catalogue-product__price",
+            "discount_price": "span.price-main-md, .price-promo",
             "image": "img.catalogue-product__image"
         }
     },
@@ -84,6 +90,7 @@ STORES = {
             "title": "h3.jsx-product-name, span.product-title",
             "link": "a[href*='/product/']",
             "price": "span.jsx-price, span.price",
+            "discount_price": ".jsx-internet-price, .product-internet-price span",
             "image": "img.jsx-product-image"
         }
     },
@@ -95,6 +102,7 @@ STORES = {
             "title": "span.vtex-product-summary-2-x-productBrand",
             "link": "a.vtex-product-summary-2-x-clearLink",
             "price": "span.vtex-product-price-1-x-sellingPriceValue",
+            "discount_price": ".vtex-product-price-1-x-sellingPrice .vtex-product-price-1-x-currencyInteger",
             "image": "img.vtex-product-summary-2-x-imageNormal"
         }
     }
